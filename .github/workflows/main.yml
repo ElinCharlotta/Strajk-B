@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install modules 
-        working-directory: './Strajk-Bowling'
+        working-directory: './Strajk-Bowling/Strajk-B'
         run: npm install
 
       - name: Run tests 
-        working-directory: './Strajk-Bowling' 
+        working-directory: './Strajk-Bowling/Strajk-B'
         run: npm run test
