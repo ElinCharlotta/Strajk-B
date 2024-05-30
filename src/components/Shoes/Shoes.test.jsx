@@ -8,7 +8,6 @@ describe('Shoes', () => {
     const mockAddShoe = vi.fn();
     const mockRemoveShoe = vi.fn();
 
-
     const shoesOriginalState = [
         { id: nanoid(), size: "" },
         { id: nanoid(), size: "" }
@@ -30,7 +29,6 @@ describe('Shoes', () => {
             />
         );
     };
-
 
     beforeEach(() => {
         render(<ShoesState />);

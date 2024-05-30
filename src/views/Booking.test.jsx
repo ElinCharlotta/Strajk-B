@@ -33,7 +33,6 @@ describe('Booking', () => {
 
     });
 
-
     fireEvent.click(screen.getByText(/strIIIIIike!/i));
 
     await waitFor(() => {
@@ -42,86 +41,87 @@ describe('Booking', () => {
       expect(screen.getByDisplayValue('STR851VJQK')).toBeInTheDocument();
       expect(screen.getByText('340 sek')).toBeInTheDocument();
       screen.debug();
+
     });
 
-
-    const backButton = screen.getByText(/Sweet, let's go!/i);
+    const backButton = screen.getByText("Sweet, let's go!");
 
     fireEvent.click(backButton);
 
     await waitFor(() => {
+      // Kollar att hamnar på main page genom att vi förväntar oss att dessa element ska finnas på sidan.
+      expect(screen.getByRole('heading', {name: /Booking/i })).toBeInTheDocument();
+      expect(screen.getByTestId('input-Date')).toBeInTheDocument();
+      expect(screen.getByText(/strIIIIIike!/i)).toBeInTheDocument();
 
-        expect(screen.getByText(/strIIIIIike!/i)).toBeInTheDocument();
     })
+    screen.debug();
+  });
 
-screen.debug();
+
+  /// ERROR HANTERING ///
+
+  it('should display error message when trying to book without filling out all required fields', async () => {
+    render(<Booking />);
+
+    fireEvent.click(screen.getByText(/strIIIIIike!/i));
+
+
+    await waitFor(() => {
+      expect(screen.getByText(/Fill out all the fields and make sure that people and shoes is the same number./i)).toBeInTheDocument();
     });
+  });
+
+  it('should display error message when number of shoe sizes does not match number of awesomw bowlers', async () => {
+    render(<Booking />);
 
 
+    fireEvent.change(screen.getByTestId('input-Date'), { target: { value: '2024-05-21' } });
+    fireEvent.change(screen.getByTestId('input-Time'), { target: { value: '00:42' } });
+    fireEvent.change(screen.getByTestId('input-Number of awesome bowlers'), { target: { value: '2' } });
+    fireEvent.change(screen.getByTestId('input-Number of lanes'), { target: { value: '1' } });
+
+    // lägger till skor för 1 person
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 1"), { target: { value: '42' } });
 
 
-/// ERROR HANTERING ///
+    fireEvent.click(screen.getByText('strIIIIIike!'));
 
-    it('should display error message when trying to book without filling out all required fields', async () => {
-      render(<Booking />);
-  
-      fireEvent.click(screen.getByText(/strIIIIIike!/i));
-  
-      
-      await waitFor(() => {
-        expect(screen.getByText(/Fill out all the fields and make sure that people and shoes is the same number./i)).toBeInTheDocument();
-      });
+
+    await waitFor(() => {
+      expect(screen.getByText('Fill out all the fields and make sure that people and shoes is the same number.')).toBeInTheDocument();
     });
+  });
 
-    it('should display error message when number of shoe sizes does not match number of awesomw bowlers', async () => {
-      render(<Booking />);
-  
-      
-      fireEvent.change(screen.getByTestId('input-Date'), { target: { value: '2024-05-21' } });
-      fireEvent.change(screen.getByTestId('input-Time'), { target: { value: '00:42' } });
-      fireEvent.change(screen.getByTestId('input-Number of awesome bowlers'), { target: { value: '2' } });
-      fireEvent.change(screen.getByTestId('input-Number of lanes'), { target: { value: '1' } });
-  
-      // lägger till skor för 1 person
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 1"), { target: { value: '42' } });
-  
-      
-      fireEvent.click(screen.getByText('strIIIIIike!'));
-  
-     
-      await waitFor(() => {
-        expect(screen.getByText('Fill out all the fields and make sure that people and shoes is the same number.')).toBeInTheDocument();      });
+  it('should display error message when number of awesome bowlers exceeds max capacity per lane', async () => {
+    render(<Booking />);
+
+    fireEvent.change(screen.getByTestId('input-Date'), { target: { value: '2024-05-21' } });
+    fireEvent.change(screen.getByTestId('input-Time'), { target: { value: '00:42' } });
+    fireEvent.change(screen.getByTestId('input-Number of awesome bowlers'), { target: { value: '6' } });
+    fireEvent.change(screen.getByTestId('input-Number of lanes'), { target: { value: '1' } });
+
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('+'));
+    fireEvent.click(screen.getByText('+'));
+
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 1"), { target: { value: '42' } });
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 2"), { target: { value: '38' } });
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 3"), { target: { value: '38' } });
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 4"), { target: { value: '38' } });
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 5"), { target: { value: '38' } });
+    fireEvent.change(screen.getByTestId("input-Shoe size / person 6"), { target: { value: '38' } });
+
+    fireEvent.click(screen.getByText('strIIIIIike!'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Fill out all the fields and make sure that people and shoes is the same number.')).toBeInTheDocument();
+      screen.debug();
     });
-
-    it('should display error message when number of awesome bowlers exceeds max capacity per lane', async () => {
-      render(<Booking />);
-      
-      fireEvent.change(screen.getByTestId('input-Date'), { target: { value: '2024-05-21' } });
-      fireEvent.change(screen.getByTestId('input-Time'), { target: { value: '00:42' } });
-      fireEvent.change(screen.getByTestId('input-Number of awesome bowlers'), { target: { value: '6' } });
-      fireEvent.change(screen.getByTestId('input-Number of lanes'), { target: { value: '1' } });
-
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.click(screen.getByText('+'));
-      fireEvent.click(screen.getByText('+'));
-
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 1"), { target: { value: '42' } });
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 2"), { target: { value: '38' } });
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 3"), { target: { value: '38' } });
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 4"), { target: { value: '38' } });  
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 5"), { target: { value: '38' } });
-      fireEvent.change(screen.getByTestId("input-Shoe size / person 6"), { target: { value: '38' } });
-      
-      fireEvent.click(screen.getByText('strIIIIIike!'));
-      
-      await waitFor(() => {
-          expect(screen.queryByText('Fill out all the fields and make sure that people and shoes is the same number.')).toBeInTheDocument();  
-          screen.debug();
-      });
   });
 
 });
