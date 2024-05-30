@@ -36,7 +36,8 @@ describe('Confirmation', () => {
                 confirmationDetails={confirmationDetails}
                 setConfirmation={mockSetConfirmation}
             />
-        )
+        );
+
         expect(screen.getByDisplayValue("2024-05-21 00:42")).toBeInTheDocument();
         expect(screen.getByDisplayValue("2")).toBeInTheDocument();
         expect(screen.getByDisplayValue("1")).toBeInTheDocument();
@@ -53,7 +54,6 @@ describe('Confirmation', () => {
                 setConfirmation={mockSetConfirmation}
             />
         );
-
 
         const element = screen.queryByText(/inga bokning gjord!/i);
         expect(element).toBeInTheDocument();
