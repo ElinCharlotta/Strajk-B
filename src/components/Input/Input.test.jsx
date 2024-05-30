@@ -16,7 +16,7 @@ describe('Input', () => {
       />
     );
 
-    const inputField = screen.getByTestId('input-test');
+    const inputField = screen.getByTestId('input-Test Label');
     expect(inputField).toBeInTheDocument();
 
   });

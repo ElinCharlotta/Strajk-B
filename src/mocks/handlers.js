@@ -3,9 +3,9 @@ import { http, HttpResponse } from 'msw';
 const bookingInformation = {
 "when":"2024-05-21T00:42",
 "lanes":"1",
-"people":"1",
-"shoes":["39"],
-"price":220,
+"people":"2",
+"shoes":["42", "39"],
+"price":340,
 "id":"STR851VJQK",
 "active":true
 }

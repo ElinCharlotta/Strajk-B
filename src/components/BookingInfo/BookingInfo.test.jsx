@@ -6,21 +6,21 @@ describe('BookingInfo', () => {
   it('should be able to add date, time, number of players and lanes', async () => {
     render(<BookingInfo />);
 
-      const dateInput = screen.getByTestId('input-when');
-      const timeInput = screen.getByTestId('input-time');
-      const awesomeBowlersInput = screen.getByTestId('input-people');
-      const lanesInput = screen.getByTestId('input-lanes');
+      const dateInput = screen.getByTestId('input-Date');
+      const timeInput = screen.getByTestId('input-Time');
+      const awesomeBowlersInput = screen.getByTestId('input-Number of awesome bowlers');
+      const lanesInput = screen.getByTestId('input-Number of lanes');
 
-      fireEvent.change(dateInput, {target: { value: '2024-05-22'}});
-      fireEvent.change(timeInput, { target: { value: '10:00' } });
-      fireEvent.change(awesomeBowlersInput, { target: { value: '4' } });
-      fireEvent.change(lanesInput, { target: { value: '2' } });
+      fireEvent.change(dateInput, {target: { value: '2024-05-21'}});
+      fireEvent.change(timeInput, { target: { value: '00:42' } });
+      fireEvent.change(awesomeBowlersInput, { target: { value: '2' } });
+      fireEvent.change(lanesInput, { target: { value: '1' } });
 
       await waitFor(() => {
-          expect(dateInput.value).toBe('2024-05-22')
-          expect(timeInput.value).toBe('10:00')
-          expect(awesomeBowlersInput.value).toBe('4')
-          expect(lanesInput.value).toBe('2')
+          expect(dateInput.value).toBe('2024-05-21')
+          expect(timeInput.value).toBe('00:42')
+          expect(awesomeBowlersInput.value).toBe('2')
+          expect(lanesInput.value).toBe('1')
       })
 
 });

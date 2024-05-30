@@ -1,77 +1,84 @@
-import { render, fireEvent, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-
-
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { useState } from 'react';
 import Shoes from './Shoes';
+import { nanoid } from 'nanoid';
 
 describe('Shoes', () => {
-    it('should allow typing in the input fields', () => {
+    const mockAddShoe = vi.fn();
+    const mockRemoveShoe = vi.fn();
 
-        const shoes = [{ id: '1' }]
 
-        render(
+    const shoesOriginalState = [
+        { id: nanoid(), size: "" },
+        { id: nanoid(), size: "" }
+    ];
+
+    const ShoesState = () => {
+        const [shoes, setShoes] = useState(shoesOriginalState);
+
+        const removeShoe = (id) => {
+            setShoes(shoes.filter(shoe => shoe.id !== id));
+            mockRemoveShoe();
+        };
+
+        return (
             <Shoes
+                addShoe={mockAddShoe}
+                removeShoe={removeShoe}
                 shoes={shoes}
             />
         );
+    };
 
-        const shoeInput = screen.getByTestId('input-1');
+
+    beforeEach(() => {
+        render(<ShoesState />);
+    });
+
+
+    it('should allow typing in the input fields', () => {
+        const shoeInput = screen.getByLabelText('Shoe size / person 1');
         expect(shoeInput).toBeInTheDocument();
 
         fireEvent.change(shoeInput, { target: { value: '42' } });
         expect(shoeInput.value).toBe('42');
     });
-    it('should allow the user to add shoe size inputfild', () => {
-        const shoes = [{ id: '1' }, { id: '2' }];
 
-        render(
-            <Shoes
-                shoes={shoes}
-                addShoe={() => {}}
-            />
-        );
+    it('should allow the user to add a shoe size input field', () => {
 
         // Klicka på knappen för att lägga till ett nytt inputfield 
         fireEvent.click(screen.getByText('+'));
 
-        // Kontrollera att ett nytt inputfield  har lagts till
-        const newShoeInput = screen.getByTestId('input-2');
-        console.log('NY SKO?:', newShoeInput);
-     
-        expect(newShoeInput).toHaveAttribute('data-testid', 'input-2');
-        // Skriv in ett värde i  inputfield 
+        // Kontrollera att ett nytt input field  har lagts till
+        const newShoeInput = screen.getByLabelText('Shoe size / person 1');
+        expect(newShoeInput).toBeInTheDocument();
+
         fireEvent.change(newShoeInput, { target: { value: '39' } });
         expect(newShoeInput.value).toBe('39');
 
-       
-        // Kontrollera att ett nytt inputfield har lagts till
-        const secondNewShoeInput = screen.getByTestId('input-2');
-        expect(secondNewShoeInput).toBeInTheDocument();
-        console.log('NY SKO:', secondNewShoeInput);
+        console.log('VAD HAR DU FÖR STORLEK:::',newShoeInput.value);
+    });
 
-    }); 
 
-    describe('Shoes', () => { 
-        it('should allow user to remove shoes input filed', () => {
 
-            const removeShoe = vi.fn(); //Mocka en remove fuction
-            const addShoe = vi.fn();
-
-            const shoes = [{ id: 'player1', size: '39' }, { id: 'player2', size: '42' }];
-        
-            render(<Shoes  addShoe={addShoe} removeShoe={removeShoe} shoes={shoes} />);
-        
-            const removeButtons = screen.getAllByText('-');
-            fireEvent.click(removeButtons[0]);
-            fireEvent.click(removeButtons[1]);
-        
-            console.log(screen.debug());
-        
-            expect(removeShoe).toHaveBeenCalledWith('player1');
-            expect(removeShoe).toHaveBeenCalledWith('player2');
-        
-            expect(removeShoe).toHaveBeenCalledTimes(2);
-            
+    it('should allow user to remove shoes input filed', async () => {
+        fireEvent.click(screen.getByText('+'));
+        await waitFor(() => {
+            const newShoeInput = screen.getByLabelText('Shoe size / person 1');
+            expect(newShoeInput).toBeInTheDocument();
         });
+
+       screen.debug();
+
+        const removeButtons = screen.getAllByText('-');
+        fireEvent.click(removeButtons[0]);
+
+
+        expect(screen.queryByLabelText('Shoe size / person 2')).not.toBeInTheDocument();
+        expect(mockRemoveShoe).toHaveBeenCalledTimes(1);
+        screen.debug();
+
     });
 });
+
